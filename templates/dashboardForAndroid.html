@@ -54,51 +54,19 @@
 						var s = '<div class="question"><h3>' + element.question + '</h3>';
 						s = s + '<p class="description">' + element.description + '</p>';
 						s = s + '<p class="date">' + element.id + ' posted on ' + element.dt + '</p>';
-						s = s + '<div class="reply_icon"><img class="new_img" src="/static/skins/np_chat_888687_707070.png" width="16" height="16" />replies</div>';
-						element.replies.forEach(reply => {
-							s = s + '<div class="reply"><p>' + reply.comment + '</p>';
-							s = s + '<p class="date">' + reply.id + ' posted on ' + reply.dt + '</p>';
-							s = s + '</div>';
-						});
-						s = s + '<div class="addReplyBox"><input type="text" class="form-control" placeholder="add your reply here"><button class="btn btn-primary">Submit</button></div>'
+
 						s = s + '</div>';
 						$(".questionToAdd").append(s);
 					}
 				});
-				$(".reply").hide();
 
-				$(".reply_icon").click(function() {
-					$(this).parent().find(".reply").toggle(400);
-					$(this).parent().find(".addReplyBox").toggle(400);
-				});
-
-				$(".addReplyBox").find("button").click(sendReply);
+				$(".question").click(function() {
+					var question = $(this).find("h3").text();
+					$(".question_box").append('<form action="/get_question" method="POST"><input type="text" name="question" value="' + question + '"><button id="redirectButton"></button></form>');
+					$("#redirectButton").click();
+					$("form").remove();
+				})
 			});				
-		}
-
-		var sendReply = function() {
-			var question = $(this).parent().parent().find("h3").text();
-			var id = "CS student";
-			var comment = $(this).parent().find("input").val();
-			var data = {
-				question: question,
-				id: id,
-				comment: comment
-			};
-			$.ajax({
-				type: "POST",
-				url: "/reply", 
-				data: JSON.stringify(data),
-				contentType: "application/json",
-				success: () => {
-					location.reload();
-				}
-			});
-		}
-
-		var showReplyBox = function() {
-			$(this).hide();
-			$(this).parent().find(".addReplyBox").show();
 		}
 
 		$(document).ready(function(){

@@ -42,19 +42,31 @@ def fetch_qnas(kn):
     qnas = list(query.fetch())
     return qnas
 
-# return a list
 def fetch_one(kn, question):
     key = datastore_client.key(kn, question)
     query = datastore_client.query(kind=kn)
     query.key_filter(key, '=')
-    qna = list(query.fetch())
-    return qna
+    for qna in list(query.fetch()):
+        return qna
+    return None
+
+def fetch_question_by_hash(questionHash):
+    questions = fetch_all("qna")
+    for question in questions:
+        if questionHash == question["questionHash"]:
+            return question
+    return None
 
 def store_qna(kn, question, description, category, id, dt):
+    m = hashlib.md5()
+    m.update(question.encode())
+    questionHash = m.hexdigest()
+
     completeKey = datastore_client.key(kn, question)
     entity = datastore.Entity(key=completeKey)
     entity.update({
         'question': question,
+        'questionHash': questionHash,
         'id': id,
         'description': description,
         'category': category,
@@ -131,6 +143,12 @@ def qna():
     qnas = fetch_qnas("qna")
     return jsonify(qnas)
     
+@app.route('/get_question', methods=['POST'])
+def get_question():
+    questionName = request.form["question"]
+    question = fetch_one("qna", questionName)
+    return render_template("questionDetailForAndroid.html", question=question)
+
 @app.route('/reply', methods=['POST'])
 def reply():
     data = request.get_json()
