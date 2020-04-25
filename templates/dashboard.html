@@ -87,38 +87,44 @@
 						<h1 class="h2">Discussion</h1>
 					</div>
 
-					<div class="question_box">	
+					<div class="icons">
 						<select id="category" class="form-control">
 							<option>required paperwork</option>
 							<option>international student</option>
 							<option>campus life</option>
 							<option>other</option>
-						</select>
-						<div class="questionToAdd"></div>
+						</select>							
+						<button type="button" id="show_unsolved" class="btn btn-outline-info">Only Show Unsolved Questions</button>
 					</div>
-			
+					<div class="questionToAdd"></div>
 					
 				</main>
 			</div>
 		</div>
-
 	</body>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script>
 		var loadQnA = function() {
-			$.get("/qna", function(data, status){
+			$.get("/qna", function(data, status) {
 				// render questions
 				data.forEach(element => {
 					if ($("#category").val() == element.category) {
 						var s = '<div class="question"><h3>' + element.question + '</h3>';
 						s = s + '<p class="description">' + element.description + '</p>';
 						s = s + '<p class="date">' + element.id + ' posted on ' + element.dt + '</p>';
-						s = s + '<div class="reply_icon"><img class="new_img" src="/static/skins/np_chat_888687_707070.png" width="16" height="16" />replies</div>';
+						// icons
+						s = s + '<div class="icons"><div class="icon reply_icon"><svg class="bi bi-chat-square-dots" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14 1H2a1 1 0 00-1 1v8a1 1 0 001 1h2.5a2 2 0 011.6.8L8 14.333 9.9 11.8a2 2 0 011.6-.8H14a1 1 0 001-1V2a1 1 0 00-1-1zM2 0a2 2 0 00-2 2v8a2 2 0 002 2h2.5a1 1 0 01.8.4l1.9 2.533a1 1 0 001.6 0l1.9-2.533a1 1 0 01.8-.4H14a2 2 0 002-2V2a2 2 0 00-2-2H2z" clip-rule="evenodd"/><path d="M5 6a1 1 0 11-2 0 1 1 0 012 0zm4 0a1 1 0 11-2 0 1 1 0 012 0zm4 0a1 1 0 11-2 0 1 1 0 012 0z"/></svg> ' + element.replies.length + ' Replies</div>';
+						if (element["likes"]) {
+							s = s + '<div class="icon like_icon question_like_icon"><svg class="bi bi-triangle" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.938 2.016a.146.146 0 00-.054.057L1.027 13.74a.176.176 0 00-.002.183c.016.03.037.05.054.06.015.01.034.017.066.017h13.713a.12.12 0 00.066-.017.163.163 0 00.055-.06.176.176 0 00-.003-.183L8.12 2.073a.146.146 0 00-.054-.057A.13.13 0 008.002 2a.13.13 0 00-.064.016zm1.044-.45a1.13 1.13 0 00-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" clip-rule="evenodd"/></svg><span> ' + element.likes + ' </span>Upvotes</div>';
+						} else {
+							s = s + '<div class="icon like_icon question_like_icon"><svg class="bi bi-triangle" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.938 2.016a.146.146 0 00-.054.057L1.027 13.74a.176.176 0 00-.002.183c.016.03.037.05.054.06.015.01.034.017.066.017h13.713a.12.12 0 00.066-.017.163.163 0 00.055-.06.176.176 0 00-.003-.183L8.12 2.073a.146.146 0 00-.054-.057A.13.13 0 008.002 2a.13.13 0 00-.064.016zm1.044-.45a1.13 1.13 0 00-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" clip-rule="evenodd"/></svg><span> 0 <span>Upvotes</div>';
+						}
+						s = s + '<div class="icon report_icon"><svg class="bi bi-question-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14 1H2a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V2a1 1 0 00-1-1zM2 0a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V2a2 2 0 00-2-2H2z" clip-rule="evenodd"/><path d="M5.25 6.033h1.32c0-.781.458-1.384 1.36-1.384.685 0 1.313.343 1.313 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.007.463h1.307v-.355c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.326 0-2.786.647-2.754 2.533zm1.562 5.516c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/></svg> Report</div></div>';
 						// render advisor replies
 						element.replies.forEach(reply => {
 							if (reply.id === "Advisor") {
-								s = s + '<div class="reply"><p>' + reply.comment + '</p>';
-								s = s + '<p class="date">' + reply.id + ' posted on ' + reply.dt + '</p>';
+								s = s + '<div class="reply advisor_reply"><p>' + reply.comment + '</p>';
+								s = s + '<p class="date"><svg class="bi bi-award-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 0l1.669.864 1.858.282.842 1.68 1.337 1.32L13.4 6l.306 1.854-1.337 1.32-.842 1.68-1.858.282L8 12l-1.669-.864-1.858-.282-.842-1.68-1.337-1.32L2.6 6l-.306-1.854 1.337-1.32.842-1.68L6.331.864 8 0z"/><path d="M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1 4 11.794z"/></svg> ' + reply.id + ' posted on ' + reply.dt + '</p>';
 								s = s + '</div>';
 							}
 						});
@@ -126,7 +132,12 @@
 						element.replies.forEach(reply => {
 							if (reply.id !== "Advisor") {
 								s = s + '<div class="reply"><p>' + reply.comment + '</p>';
-								s = s + '<p class="date">' + reply.id + ' posted on ' + reply.dt + '</p>';
+								if (reply["endorsed"]) {
+									s = s + '<p class="endorse_text">Advisor endorsed the reply</p>';
+									s = s + '<div class="icons"><p class="date">' + reply.id + ' posted on ' + reply.dt + '</p><div class="icon endorse_icon endorsed"><svg class="bi bi-triangle-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 011.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z" clip-rule="evenodd"/></svg> Endorsed</div></div>';
+								} else {
+									s = s + '<div class="icons"><p class="date">' + reply.id + ' posted on ' + reply.dt + '</p><div class="icon endorse_icon"><svg class="bi bi-triangle" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.938 2.016a.146.146 0 00-.054.057L1.027 13.74a.176.176 0 00-.002.183c.016.03.037.05.054.06.015.01.034.017.066.017h13.713a.12.12 0 00.066-.017.163.163 0 00.055-.06.176.176 0 00-.003-.183L8.12 2.073a.146.146 0 00-.054-.057A.13.13 0 008.002 2a.13.13 0 00-.064.016zm1.044-.45a1.13 1.13 0 00-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z" clip-rule="evenodd"/></svg> Endorse</div></div>';	
+								}
 								s = s + '</div>';
 							}
 						});
@@ -140,11 +151,60 @@
 				$(".reply").hide();
 
 				$(".reply_icon").click(function() {
-					$(this).parent().find(".reply").toggle(400);
-					$(this).parent().find(".addReplyBox").toggle(400);
+					$(this).parent().parent().find(".reply").toggle(400);
+					$(this).parent().parent().find(".addReplyBox").toggle(400);
 				});
 
 				$(".addReplyBox").find("button").click(sendReply);
+
+				// advisor endorses a reply
+				$(".endorse_icon").not(".endorsed").click(function() {
+					let question = $(this).parent().parent().parent().find("h3").text();
+					let reply = $(this).parent().prev().text();
+					let data = {
+						question: question,
+						reply: reply
+					}
+					$.ajax({
+						type: "POST",
+						url: "/advisor/discuss/endorse", 
+						data: JSON.stringify(data),
+						contentType: "application/json",
+						success: () => {
+							$(this).addClass("endorsed");
+							let text = $(this).text();
+							$(this).text(text + "d");
+							$(this).unbind("click");
+						}
+					});					
+				});
+
+				// hide solved replies
+				$("#show_unsolved").unbind('click');
+				$("#show_unsolved").click(function() {
+					$(".advisor_reply").parent().toggle(200);
+					if ($(this).text() === "Only Show Unsolved Questions") {
+						$(this).text("Show All Questions");
+					} else {
+						$(this).text("Only Show Unsolved Questions");
+					}
+				});
+
+				// add question upvote event
+				$(".question_like_icon").click(function() {
+					let question = $(this).parent().parent().find("h3").text();
+					let data = {question: question};
+					$.ajax({
+						type: "POST",
+						url: "/advisor/discuss/upvote_question", 
+						data: JSON.stringify(data),
+						contentType: "application/json",
+						success: () => {
+							let num = parseInt($(this).find("span").text()) + 1;
+							$(this).html('<svg class="bi bi-triangle-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 011.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z" clip-rule="evenodd"/></svg><span> ' + num + ' </span>Upvotes');
+						}
+					});	
+				});
 			});				
 		}
 

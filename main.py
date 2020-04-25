@@ -46,9 +46,25 @@ def fetch_one(kn, question):
     key = datastore_client.key(kn, question)
     query = datastore_client.query(kind=kn)
     query.key_filter(key, '=')
-    for qna in list(query.fetch()):
-        return qna
-    return None
+    qnas = list(query.fetch())
+    if len(qnas) == 0:
+        return None
+    return qnas[0]
+
+def store_endorse(question, reply):
+    q = fetch_one("qna", question)
+    for r in q["replies"]:
+        if reply == r["comment"]:
+            r["endorsed"] = True
+    datastore_client.put(q)
+
+def store_upvote_question(question):
+    q = fetch_one("qna", question)
+    if q.get("likes") == None:
+        q["likes"] = 1
+    else:
+        q["likes"] += 1
+    datastore_client.put(q)    
 
 def fetch_question_by_hash(questionHash):
     questions = fetch_all("qna")
@@ -76,14 +92,16 @@ def store_qna(kn, question, description, category, id, dt):
     datastore_client.put(entity)
 
 def store_reply(kn, question, id, comment, dt):
-    qnas = fetch_one(kn, question)
-    for qna in qnas:
-        qna["replies"].append({
-            "id": id,
-            "comment": comment,
-            "dt": dt
-        })
-        datastore_client.put(qna)
+    qna = fetch_one(kn, question)
+
+    # qnas = fetch_one(kn, question)
+    # for qna in qnas:
+    qna["replies"].append({
+        "id": id,
+        "comment": comment,
+        "dt": dt
+    })
+    datastore_client.put(qna)
 
 def username_exist(username):
     users = fetch_all("users")
@@ -214,6 +232,21 @@ def download():
 @app.route('/advisor/discuss', methods=['GET', 'POST'])
 def advisor_discuss():
     return render_template("dashboard.html")
+
+@app.route('/advisor/discuss/endorse', methods=['POST'])
+def advisor_endorse():
+    data = request.get_json()
+    question = data["question"]
+    reply = data["reply"]
+    store_endorse(question, reply)
+    return "successfully endorsed"
+
+@app.route('/advisor/discuss/upvote_question', methods=['POST'])
+def upvote_question():
+    data = request.get_json()
+    question = data["question"]
+    store_upvote_question(question)
+    return "successfully upvote question"
 
 @app.route('/advisor/discussForAndroid', methods=['GET', 'POST'])
 def advisor_discussForAndroid():
